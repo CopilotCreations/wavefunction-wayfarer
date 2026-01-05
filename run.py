@@ -20,7 +20,20 @@ from src.main import main
 
 
 def parse_arguments() -> argparse.Namespace:
-    """Parse command line arguments."""
+    """Parse command line arguments for the Quantum Text Adventure game.
+
+    Parses the command line arguments and returns a namespace containing
+    the parsed values. Supports optional player name specification.
+
+    Returns:
+        argparse.Namespace: Parsed arguments with the following attributes:
+            - name (str | None): Player name if provided, None otherwise.
+
+    Examples:
+        >>> args = parse_arguments()
+        >>> print(args.name)
+        None
+    """
     parser = argparse.ArgumentParser(
         description="Quantum Text Adventure - A quantum mechanics text adventure game",
         formatter_class=argparse.RawDescriptionHelpFormatter,

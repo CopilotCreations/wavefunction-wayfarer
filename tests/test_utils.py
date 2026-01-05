@@ -34,7 +34,11 @@ class TestEnsureSaveDirectory:
     """Tests for ensure_save_directory function."""
     
     def test_creates_directory(self, tmp_path):
-        """Test that save directory is created."""
+        """Test that save directory is created.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         with patch('src.utils.SAVE_DIR', tmp_path / "test_saves"):
             from src import utils
             original_save_dir = utils.SAVE_DIR
@@ -50,7 +54,11 @@ class TestGetSaveFilepath:
     """Tests for get_save_filepath function."""
     
     def test_returns_correct_path(self, tmp_path):
-        """Test filepath generation."""
+        """Test filepath generation.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         with patch('src.utils.SAVE_DIR', tmp_path):
             from src import utils
             original = utils.SAVE_DIR
@@ -66,21 +74,31 @@ class TestFormatSeparator:
     """Tests for format_separator function."""
     
     def test_default_separator(self):
-        """Test default separator."""
+        """Test default separator.
+
+        Verifies that the default separator uses the '═' character
+        and has a length of 70.
+        """
         result = format_separator()
         
         assert len(result) == 70
         assert result == "═" * 70
     
     def test_custom_char(self):
-        """Test separator with custom character."""
+        """Test separator with custom character.
+
+        Verifies that a custom character can be used for the separator.
+        """
         result = format_separator("-", 20)
         
         assert len(result) == 20
         assert result == "-" * 20
     
     def test_custom_length(self):
-        """Test separator with custom length."""
+        """Test separator with custom length.
+
+        Verifies that a custom length can be specified for the separator.
+        """
         result = format_separator("*", 10)
         
         assert len(result) == 10
@@ -91,7 +109,11 @@ class TestFormatBox:
     """Tests for format_box function."""
     
     def test_basic_box(self):
-        """Test basic box formatting."""
+        """Test basic box formatting.
+
+        Verifies that the box contains the title, content lines,
+        and proper box drawing characters.
+        """
         result = format_box("Title", ["Line 1", "Line 2"])
         
         assert "Title" in result
@@ -101,14 +123,22 @@ class TestFormatBox:
         assert "╚" in result
     
     def test_box_with_long_content(self):
-        """Test box truncates long content."""
+        """Test box truncates long content.
+
+        Verifies that content exceeding the box width is truncated
+        with an ellipsis.
+        """
         long_line = "x" * 100
         result = format_box("Title", [long_line], width=40)
         
         assert "..." in result
     
     def test_empty_content(self):
-        """Test box with empty content."""
+        """Test box with empty content.
+
+        Verifies that an empty content list still produces a valid box
+        with the title.
+        """
         result = format_box("Empty", [])
         
         assert "Empty" in result
@@ -119,13 +149,20 @@ class TestWeightedRandomChoice:
     """Tests for weighted_random_choice function."""
     
     def test_single_choice(self):
-        """Test with single choice."""
+        """Test with single choice.
+
+        Verifies that a single item with weight 1.0 is always selected.
+        """
         result = weighted_random_choice(["only"], [1.0])
         
         assert result == "only"
     
     def test_weighted_selection(self):
-        """Test that weights affect selection."""
+        """Test that weights affect selection.
+
+        Verifies that higher weighted items are selected more frequently
+        over a large number of trials.
+        """
         choices = ["A", "B"]
         weights = [0.9, 0.1]
         
@@ -138,12 +175,20 @@ class TestWeightedRandomChoice:
         assert counts["A"] > counts["B"]
     
     def test_mismatched_lengths(self):
-        """Test error on mismatched lengths."""
+        """Test error on mismatched lengths.
+
+        Verifies that a ValueError is raised when the number of choices
+        does not match the number of weights.
+        """
         with pytest.raises(ValueError):
             weighted_random_choice(["A", "B"], [1.0])
     
     def test_equal_weights(self):
-        """Test with equal weights."""
+        """Test with equal weights.
+
+        Verifies that items with equal weights are selected with
+        approximately equal frequency.
+        """
         choices = ["A", "B", "C"]
         weights = [1.0, 1.0, 1.0]
         
@@ -161,7 +206,11 @@ class TestCalculateProbabilityDistribution:
     """Tests for calculate_probability_distribution function."""
     
     def test_single_state(self):
-        """Test distribution with single state."""
+        """Test distribution with single state.
+
+        Verifies that a single state with probability 1.0 results in
+        a distribution with one entry at 100%.
+        """
         states = [QuantumState(location="A", probability=1.0)]
         
         dist = calculate_probability_distribution(states)
@@ -170,7 +219,11 @@ class TestCalculateProbabilityDistribution:
         assert list(dist.values())[0] == 1.0
     
     def test_equal_probabilities(self):
-        """Test distribution with equal probabilities."""
+        """Test distribution with equal probabilities.
+
+        Verifies that two states with equal probabilities each receive
+        50% in the distribution.
+        """
         states = [
             QuantumState(location="A", probability=0.5),
             QuantumState(location="B", probability=0.5)
@@ -183,7 +236,11 @@ class TestCalculateProbabilityDistribution:
             assert abs(prob - 0.5) < 0.01
     
     def test_unequal_probabilities(self):
-        """Test distribution with unequal probabilities."""
+        """Test distribution with unequal probabilities.
+
+        Verifies that states with different probabilities are correctly
+        represented in the distribution.
+        """
         states = [
             QuantumState(location="A", probability=0.75),
             QuantumState(location="B", probability=0.25)
@@ -200,28 +257,41 @@ class TestFormatProbabilityBar:
     """Tests for format_probability_bar function."""
     
     def test_zero_probability(self):
-        """Test bar at 0%."""
+        """Test bar at 0%.
+
+        Verifies that zero probability displays an empty bar with
+        all empty characters.
+        """
         result = format_probability_bar(0.0)
         
         assert "0.0%" in result
         assert "░" * 20 in result
     
     def test_full_probability(self):
-        """Test bar at 100%."""
+        """Test bar at 100%.
+
+        Verifies that full probability displays a completely filled bar.
+        """
         result = format_probability_bar(1.0)
         
         assert "100.0%" in result
         assert "█" * 20 in result
     
     def test_half_probability(self):
-        """Test bar at 50%."""
+        """Test bar at 50%.
+
+        Verifies that 50% probability displays a half-filled bar.
+        """
         result = format_probability_bar(0.5)
         
         assert "50.0%" in result
         assert "█" * 10 in result
     
     def test_custom_width(self):
-        """Test bar with custom width."""
+        """Test bar with custom width.
+
+        Verifies that a custom width parameter correctly scales the bar.
+        """
         result = format_probability_bar(0.5, width=10)
         
         assert "█" * 5 in result
@@ -232,7 +302,11 @@ class TestSaveGame:
     """Tests for save_game function."""
     
     def test_save_creates_file(self, tmp_path):
-        """Test that save creates a file."""
+        """Test that save creates a file.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src.quantum_adventure import QuantumAdventure
         from src import utils
         
@@ -248,7 +322,11 @@ class TestSaveGame:
         utils.SAVE_DIR = original
     
     def test_save_content_valid_json(self, tmp_path):
-        """Test that save content is valid JSON."""
+        """Test that save content is valid JSON.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src.quantum_adventure import QuantumAdventure
         from src import utils
         
@@ -272,7 +350,11 @@ class TestLoadGame:
     """Tests for load_game function."""
     
     def test_load_nonexistent_file(self, tmp_path):
-        """Test loading non-existent file returns None."""
+        """Test loading non-existent file returns None.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src import utils
         
         original = utils.SAVE_DIR
@@ -285,7 +367,11 @@ class TestLoadGame:
         utils.SAVE_DIR = original
     
     def test_load_existing_save(self, tmp_path):
-        """Test loading existing save."""
+        """Test loading existing save.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src.quantum_adventure import QuantumAdventure
         from src import utils
         
@@ -311,7 +397,11 @@ class TestListSaves:
     """Tests for list_saves function."""
     
     def test_list_empty_directory(self, tmp_path):
-        """Test listing saves in empty directory."""
+        """Test listing saves in empty directory.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src import utils
         
         original = utils.SAVE_DIR
@@ -324,7 +414,11 @@ class TestListSaves:
         utils.SAVE_DIR = original
     
     def test_list_saves_with_files(self, tmp_path):
-        """Test listing saves with save files."""
+        """Test listing saves with save files.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src.quantum_adventure import QuantumAdventure
         from src import utils
         
@@ -350,7 +444,11 @@ class TestDeleteSave:
     """Tests for delete_save function."""
     
     def test_delete_nonexistent(self, tmp_path):
-        """Test deleting non-existent save returns False."""
+        """Test deleting non-existent save returns False.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src import utils
         
         original = utils.SAVE_DIR
@@ -363,7 +461,11 @@ class TestDeleteSave:
         utils.SAVE_DIR = original
     
     def test_delete_existing(self, tmp_path):
-        """Test deleting existing save."""
+        """Test deleting existing save.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         from src.quantum_adventure import QuantumAdventure
         from src import utils
         

@@ -14,11 +14,13 @@ from .player import CommandParser
 
 
 def get_player_name() -> str:
-    """
-    Prompt the player for their name.
+    """Prompt the player for their name.
+    
+    Displays a welcome banner and prompts the user to enter their name.
+    If no name is provided, defaults to "Traveler".
     
     Returns:
-        The player's chosen name, or "Traveler" if none provided.
+        str: The player's chosen name, or "Traveler" if none provided.
     """
     print("\n" + "=" * 70)
     print("  Welcome to the Quantum Realm!")
@@ -29,20 +31,22 @@ def get_player_name() -> str:
 
 
 def print_prompt() -> None:
-    """Print the input prompt."""
+    """Print the input prompt.
+    
+    Displays a separator line followed by the command prompt indicator.
+    """
     print("\n" + "-" * 40)
     print(">> ", end="", flush=True)
 
 
 def game_loop(game: QuantumAdventure) -> None:
-    """
-    Main game loop.
+    """Run the main game loop.
     
     Continuously prompts for player input, processes commands,
-    and displays results until the game ends.
+    and displays results until the game ends or the user interrupts.
     
     Args:
-        game: The QuantumAdventure instance to run.
+        game (QuantumAdventure): The QuantumAdventure instance to run.
     """
     # Display welcome message and initial location
     print(game.get_welcome_message())
@@ -72,14 +76,18 @@ def game_loop(game: QuantumAdventure) -> None:
 
 
 def main(player_name: Optional[str] = None) -> int:
-    """
-    Main entry point for the game.
+    """Main entry point for the game.
+    
+    Initializes and runs the Quantum Text Adventure game. Prompts for
+    a player name if not provided, runs the game loop, and displays
+    final statistics upon completion.
     
     Args:
-        player_name: Optional player name (prompts if not provided).
+        player_name (Optional[str]): The player's name. If None, the user
+            will be prompted to enter a name.
         
     Returns:
-        Exit code (0 for success).
+        int: Exit code (0 for success, 1 for error).
     """
     try:
         # Get player name if not provided

@@ -22,43 +22,40 @@ SAVE_DIR = Path("saves")
 
 
 def ensure_save_directory() -> Path:
-    """
-    Ensure the save directory exists.
-    
+    """Ensure the save directory exists.
+
     Returns:
-        Path to the save directory.
+        Path: Path to the save directory.
     """
     SAVE_DIR.mkdir(exist_ok=True)
     return SAVE_DIR
 
 
 def get_save_filepath(save_name: str) -> Path:
-    """
-    Get the full filepath for a save file.
-    
+    """Get the full filepath for a save file.
+
     Args:
         save_name: Name of the save file (without extension).
-        
+
     Returns:
-        Path to the save file.
+        Path: Path to the save file.
     """
     ensure_save_directory()
     return SAVE_DIR / f"{save_name}.json"
 
 
 def save_game(game: "QuantumAdventure", save_name: str = "quicksave") -> bool:
-    """
-    Save the current game state to a file.
-    
+    """Save the current game state to a file.
+
     This saves all parallel timelines, player state, and game metadata
     to a JSON file that can be loaded later.
-    
+
     Args:
         game: The QuantumAdventure instance to save.
         save_name: Name for the save file.
-        
+
     Returns:
-        True if save was successful, False otherwise.
+        bool: True if save was successful, False otherwise.
     """
     try:
         filepath = get_save_filepath(save_name)
@@ -79,14 +76,14 @@ def save_game(game: "QuantumAdventure", save_name: str = "quicksave") -> bool:
 
 
 def load_game(save_name: str = "quicksave") -> Optional[Dict[str, Any]]:
-    """
-    Load a game state from a file.
-    
+    """Load a game state from a file.
+
     Args:
         save_name: Name of the save file to load.
-        
+
     Returns:
-        Dictionary containing loaded game data, or None if load failed.
+        Optional[Dict[str, Any]]: Dictionary containing loaded game data,
+            or None if load failed.
     """
     try:
         filepath = get_save_filepath(save_name)
@@ -116,11 +113,11 @@ def load_game(save_name: str = "quicksave") -> Optional[Dict[str, Any]]:
 
 
 def list_saves() -> List[Dict[str, str]]:
-    """
-    List all available save files.
-    
+    """List all available save files.
+
     Returns:
-        List of dictionaries containing save file information.
+        List[Dict[str, str]]: List of dictionaries containing save file
+            information.
     """
     ensure_save_directory()
     saves = []
@@ -144,14 +141,13 @@ def list_saves() -> List[Dict[str, str]]:
 
 
 def delete_save(save_name: str) -> bool:
-    """
-    Delete a save file.
-    
+    """Delete a save file.
+
     Args:
         save_name: Name of the save file to delete.
-        
+
     Returns:
-        True if deletion was successful, False otherwise.
+        bool: True if deletion was successful, False otherwise.
     """
     try:
         filepath = get_save_filepath(save_name)
@@ -165,30 +161,28 @@ def delete_save(save_name: str) -> bool:
 
 
 def format_separator(char: str = "═", length: int = 70) -> str:
-    """
-    Create a formatted separator line.
-    
+    """Create a formatted separator line.
+
     Args:
         char: Character to use for the separator.
         length: Length of the separator.
-        
+
     Returns:
-        Formatted separator string.
+        str: Formatted separator string.
     """
     return char * length
 
 
 def format_box(title: str, content: List[str], width: int = 70) -> str:
-    """
-    Format content in a box with a title.
-    
+    """Format content in a box with a title.
+
     Args:
         title: Title for the box.
         content: List of content lines.
         width: Width of the box.
-        
+
     Returns:
-        Formatted box string.
+        str: Formatted box string.
     """
     inner_width = width - 4
     
@@ -212,16 +206,15 @@ def clear_screen() -> None:
 
 
 def weighted_random_choice(choices: List[Any], weights: List[float]) -> Any:
-    """
-    Make a weighted random selection from a list.
-    
+    """Make a weighted random selection from a list.
+
     Args:
         choices: List of items to choose from.
         weights: Corresponding weights for each choice.
-        
+
     Returns:
-        The selected item.
-    
+        Any: The selected item.
+
     Raises:
         ValueError: If choices and weights have different lengths.
     """
@@ -245,14 +238,13 @@ def weighted_random_choice(choices: List[Any], weights: List[float]) -> Any:
 def calculate_probability_distribution(
     states: List[QuantumState]
 ) -> Dict[str, float]:
-    """
-    Calculate the probability distribution across states.
-    
+    """Calculate the probability distribution across states.
+
     Args:
         states: List of QuantumState instances.
-        
+
     Returns:
-        Dictionary mapping state descriptions to probabilities.
+        Dict[str, float]: Dictionary mapping state descriptions to probabilities.
     """
     total_prob = sum(s.probability for s in states)
     
@@ -265,15 +257,14 @@ def calculate_probability_distribution(
 
 
 def format_probability_bar(probability: float, width: int = 20) -> str:
-    """
-    Create a visual probability bar.
-    
+    """Create a visual probability bar.
+
     Args:
         probability: Probability value between 0 and 1.
         width: Width of the bar in characters.
-        
+
     Returns:
-        Formatted probability bar string.
+        str: Formatted probability bar string.
     """
     filled = int(probability * width)
     empty = width - filled

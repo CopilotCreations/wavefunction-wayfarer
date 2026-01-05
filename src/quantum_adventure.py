@@ -97,7 +97,15 @@ class QuantumAdventure:
             return result
     
     def _format_location(self, location: Location, state: QuantumState) -> str:
-        """Format a location description for display."""
+        """Format a location description for display.
+
+        Args:
+            location: The Location object to format.
+            state: The current QuantumState for context (e.g., enemy encounters).
+
+        Returns:
+            A formatted string with the location's details in a bordered box.
+        """
         separator = "═" * 70
         result = f"╔{separator}╗\n"
         result += f"║ 📍 {location.name:65} ║\n"
@@ -130,7 +138,15 @@ class QuantumAdventure:
         return result
     
     def _wrap_text(self, text: str, width: int) -> List[str]:
-        """Wrap text to specified width."""
+        """Wrap text to specified width.
+
+        Args:
+            text: The text string to wrap.
+            width: Maximum character width per line.
+
+        Returns:
+            A list of strings, each representing a wrapped line.
+        """
         words = text.split()
         lines = []
         current_line = []
@@ -249,7 +265,14 @@ class QuantumAdventure:
         return result
     
     def _check_random_events(self, state: QuantumState) -> None:
-        """Check for random item or enemy appearances."""
+        """Check for random item or enemy appearances.
+
+        Probabilistically spawns items or enemies in the player's current
+        location based on configured probability thresholds.
+
+        Args:
+            state: The QuantumState to check and potentially modify.
+        """
         location = self.locations.get(state.location)
         if not location:
             return
@@ -271,7 +294,17 @@ class QuantumAdventure:
                 state.add_to_log(f"A {enemy} appears!")
     
     def _handle_look(self, command: ParsedCommand) -> str:
-        """Handle look/examine commands."""
+        """Handle look/examine commands.
+
+        If no target is specified, displays the current location. Otherwise,
+        examines a specific object in the inventory or world.
+
+        Args:
+            command: The parsed command containing optional target argument.
+
+        Returns:
+            A description of the location or examined object.
+        """
         target = command.get_first_arg()
         
         if not target:
@@ -293,7 +326,16 @@ class QuantumAdventure:
         return f"You don't see any '{target}' here."
     
     def _handle_inventory(self, command: ParsedCommand) -> str:
-        """Handle inventory display."""
+        """Handle inventory display.
+
+        Shows the inventory contents for all active timelines in superposition.
+
+        Args:
+            command: The parsed command (no arguments used).
+
+        Returns:
+            A formatted inventory status display for all timelines.
+        """
         results = []
         for state in self.states:
             inv_list = ", ".join(state.inventory) if state.inventory else "Empty"
@@ -312,7 +354,17 @@ class QuantumAdventure:
         return header + body + footer
     
     def _handle_take(self, command: ParsedCommand) -> str:
-        """Handle taking items."""
+        """Handle taking items.
+
+        Picks up an item from the current location across all timelines
+        where the item exists.
+
+        Args:
+            command: The parsed command containing the item name to take.
+
+        Returns:
+            Result messages indicating success or failure per timeline.
+        """
         item = command.get_all_args_as_string()
         if not item:
             return "Take what? Specify an item."
@@ -340,7 +392,17 @@ class QuantumAdventure:
         return f"There is no '{item}' here to take."
     
     def _handle_drop(self, command: ParsedCommand) -> str:
-        """Handle dropping items."""
+        """Handle dropping items.
+
+        Drops an item from inventory to the current location across all
+        timelines where the player has the item.
+
+        Args:
+            command: The parsed command containing the item name to drop.
+
+        Returns:
+            Result messages indicating success or failure per timeline.
+        """
         item = command.get_all_args_as_string()
         if not item:
             return "Drop what? Specify an item."
@@ -478,7 +540,17 @@ class QuantumAdventure:
         return selected
     
     def _handle_status(self, command: ParsedCommand) -> str:
-        """Display status of all states in superposition."""
+        """Display status of all states in superposition.
+
+        Shows detailed information about each timeline including location,
+        probability, and inventory.
+
+        Args:
+            command: The parsed command (no arguments used).
+
+        Returns:
+            A formatted status display showing all parallel realities.
+        """
         result = "╔══════════════════════════════════════════════════════════════════════╗\n"
         result += "║                 QUANTUM SUPERPOSITION STATUS                         ║\n"
         result += "╠══════════════════════════════════════════════════════════════════════╣\n"
@@ -502,7 +574,16 @@ class QuantumAdventure:
         return result
     
     def _handle_history(self, command: ParsedCommand) -> str:
-        """Display story log for all timelines."""
+        """Display story log for all timelines.
+
+        Shows the last 5 events from the story log for each active timeline.
+
+        Args:
+            command: The parsed command (no arguments used).
+
+        Returns:
+            A formatted history display showing recent events per timeline.
+        """
         result = "╔══════════════════════════════════════════════════════════════════════╗\n"
         result += "║                        STORY LOG / HISTORY                           ║\n"
         result += "╠══════════════════════════════════════════════════════════════════════╣\n"
@@ -520,7 +601,17 @@ class QuantumAdventure:
         return result
     
     def _handle_attack(self, command: ParsedCommand) -> str:
-        """Handle attacking enemies."""
+        """Handle attacking enemies.
+
+        Combat is probabilistic with a 60% success rate. Attacks the current
+        enemy in each timeline, or a specific target if specified.
+
+        Args:
+            command: The parsed command containing optional target name.
+
+        Returns:
+            Result messages indicating combat outcomes per timeline.
+        """
         target = command.get_all_args_as_string()
         
         results = []
@@ -548,16 +639,42 @@ class QuantumAdventure:
         return "There's nothing to attack."
     
     def _handle_help(self, command: ParsedCommand) -> str:
-        """Display help text."""
+        """Display help text.
+
+        Args:
+            command: The parsed command (no arguments used).
+
+        Returns:
+            The help text listing all available commands.
+        """
         return CommandParser.get_help_text()
     
     def _handle_quit(self, command: ParsedCommand) -> str:
-        """Handle quit command."""
+        """Handle quit command.
+
+        Sets the game running flag to False and returns a farewell message.
+
+        Args:
+            command: The parsed command (no arguments used).
+
+        Returns:
+            A farewell message to the player.
+        """
         self.running = False
         return "Thank you for playing Quantum Text Adventure! All realities collapse..."
     
     def _handle_save(self, command: ParsedCommand) -> str:
-        """Handle save command - delegates to utils."""
+        """Handle save command - delegates to utils.
+
+        Saves the current game state to a file with the specified name.
+
+        Args:
+            command: The parsed command containing optional save name
+                (defaults to "quicksave").
+
+        Returns:
+            A message indicating save success or failure.
+        """
         from .utils import save_game
         
         save_name = command.get_first_arg() or "quicksave"
@@ -568,7 +685,17 @@ class QuantumAdventure:
         return "Failed to save game."
     
     def _handle_load(self, command: ParsedCommand) -> str:
-        """Handle load command - delegates to utils."""
+        """Handle load command - delegates to utils.
+
+        Loads a previously saved game state from a file.
+
+        Args:
+            command: The parsed command containing optional save name
+                (defaults to "quicksave").
+
+        Returns:
+            A message indicating load success or failure.
+        """
         from .utils import load_game
         
         save_name = command.get_first_arg() or "quicksave"
@@ -581,11 +708,19 @@ class QuantumAdventure:
         return f"Failed to load game '{save_name}'. File may not exist."
     
     def is_running(self) -> bool:
-        """Check if the game should continue running."""
+        """Check if the game should continue running.
+
+        Returns:
+            True if the game loop should continue, False otherwise.
+        """
         return self.running
     
     def get_welcome_message(self) -> str:
-        """Return the game welcome/intro message."""
+        """Return the game welcome/intro message.
+
+        Returns:
+            A formatted ASCII art welcome banner with game instructions.
+        """
         return """
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                                                                       ║
@@ -613,7 +748,12 @@ class QuantumAdventure:
 """
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert game state to dictionary for serialization."""
+        """Convert game state to dictionary for serialization.
+
+        Returns:
+            A dictionary containing all game state data suitable for
+            JSON serialization.
+        """
         return {
             "states": [s.to_dict() for s in self.states],
             "player": self.player.to_dict(),
@@ -622,7 +762,14 @@ class QuantumAdventure:
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "QuantumAdventure":
-        """Create a QuantumAdventure from a dictionary."""
+        """Create a QuantumAdventure from a dictionary.
+
+        Args:
+            data: A dictionary containing serialized game state data.
+
+        Returns:
+            A new QuantumAdventure instance restored from the saved data.
+        """
         game = cls()
         game.states = [QuantumState.from_dict(s) for s in data["states"]]
         game.player = Player.from_dict(data["player"])

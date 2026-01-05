@@ -16,7 +16,11 @@ class TestQuantumAdventureInitialization:
     """Tests for QuantumAdventure initialization."""
     
     def test_default_initialization(self):
-        """Test default game initialization."""
+        """Test default game initialization.
+
+        Verifies that a new QuantumAdventure instance has default player name,
+        single initial state at Quantum Nexus, and running flag set to True.
+        """
         game = QuantumAdventure()
         
         assert game.player.name == "Traveler"
@@ -25,20 +29,31 @@ class TestQuantumAdventureInitialization:
         assert game.running is True
     
     def test_custom_player_name(self):
-        """Test initialization with custom player name."""
+        """Test initialization with custom player name.
+
+        Verifies that the player name can be customized during game creation.
+        """
         game = QuantumAdventure(player_name="Alice")
         
         assert game.player.name == "Alice"
     
     def test_initial_state_has_log_entry(self):
-        """Test that initial state has welcome log entry."""
+        """Test that initial state has welcome log entry.
+
+        Verifies that the initial game state includes a welcome message
+        in the story log mentioning the adventure beginning.
+        """
         game = QuantumAdventure()
         
         assert len(game.states[0].story_log) >= 1
         assert "adventure begins" in game.states[0].story_log[0].lower()
     
     def test_locations_initialized(self):
-        """Test that locations are initialized."""
+        """Test that locations are initialized.
+
+        Verifies that the game initializes with at least 5 locations
+        including the starting Quantum Nexus location.
+        """
         game = QuantumAdventure()
         
         assert len(game.locations) >= 5
@@ -49,7 +64,11 @@ class TestQuantumAdventureMovement:
     """Tests for movement mechanics."""
     
     def test_valid_movement(self):
-        """Test moving in a valid direction."""
+        """Test moving in a valid direction.
+
+        Verifies that issuing a move command results in either
+        changing location or creating a branched quantum state.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.MOVE, ["north"], "go north")
         
@@ -59,7 +78,11 @@ class TestQuantumAdventureMovement:
         assert game.states[0].location != "Quantum Nexus" or len(game.states) > 1
     
     def test_invalid_direction_no_args(self):
-        """Test movement with no direction."""
+        """Test movement with no direction.
+
+        Verifies that a move command without a direction argument
+        returns an appropriate error message asking for a direction.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.MOVE, [], "go")
         
@@ -68,7 +91,11 @@ class TestQuantumAdventureMovement:
         assert "where" in result.lower() or "direction" in result.lower()
     
     def test_movement_records_move(self):
-        """Test that movement records in player stats."""
+        """Test that movement records in player stats.
+
+        Verifies that each successful movement command increments
+        the player's moves counter in their stats.
+        """
         game = QuantumAdventure()
         initial_moves = game.player.stats["moves"]
         
@@ -82,7 +109,11 @@ class TestQuantumAdventureLook:
     """Tests for look/examine commands."""
     
     def test_look_at_location(self):
-        """Test looking at current location."""
+        """Test looking at current location.
+
+        Verifies that the look command without arguments returns
+        a description containing the current location name.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.LOOK, [], "look")
         
@@ -91,7 +122,11 @@ class TestQuantumAdventureLook:
         assert "Quantum Nexus" in result
     
     def test_look_at_item_in_inventory(self):
-        """Test looking at item in inventory."""
+        """Test looking at item in inventory.
+
+        Verifies that examining an item in the player's inventory
+        returns a description containing the item name.
+        """
         game = QuantumAdventure()
         game.states[0].add_item("sword")
         
@@ -101,7 +136,11 @@ class TestQuantumAdventureLook:
         assert "sword" in result.lower()
     
     def test_look_at_nonexistent_item(self):
-        """Test looking at item that doesn't exist."""
+        """Test looking at item that doesn't exist.
+
+        Verifies that examining a non-existent item returns
+        an appropriate message indicating the item is not visible.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.LOOK, ["unicorn"], "look unicorn")
         
@@ -114,7 +153,11 @@ class TestQuantumAdventureInventory:
     """Tests for inventory management."""
     
     def test_empty_inventory(self):
-        """Test displaying empty inventory."""
+        """Test displaying empty inventory.
+
+        Verifies that viewing an empty inventory returns a message
+        indicating the inventory is empty or shows the inventory header.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.INVENTORY, [], "inventory")
         
@@ -123,7 +166,11 @@ class TestQuantumAdventureInventory:
         assert "empty" in result.lower() or "INVENTORY" in result
     
     def test_inventory_with_items(self):
-        """Test displaying inventory with items."""
+        """Test displaying inventory with items.
+
+        Verifies that viewing an inventory with items lists
+        all items currently held by the player.
+        """
         game = QuantumAdventure()
         game.states[0].add_item("sword")
         game.states[0].add_item("potion")
@@ -135,7 +182,11 @@ class TestQuantumAdventureInventory:
         assert "potion" in result.lower()
     
     def test_take_item(self):
-        """Test taking an item."""
+        """Test taking an item.
+
+        Verifies that the take command successfully picks up an item
+        from the current location and adds it to inventory.
+        """
         game = QuantumAdventure()
         game.states[0].world_items["Quantum Nexus"] = ["test key"]
         
@@ -145,7 +196,11 @@ class TestQuantumAdventureInventory:
         assert "pick up" in result.lower() or "test key" in result.lower()
     
     def test_take_nonexistent_item(self):
-        """Test taking item that doesn't exist."""
+        """Test taking item that doesn't exist.
+
+        Verifies that attempting to take a non-existent item
+        returns an appropriate error message.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.TAKE, ["ghost"], "take ghost")
         
@@ -154,7 +209,11 @@ class TestQuantumAdventureInventory:
         assert "no" in result.lower() or "not" in result.lower()
     
     def test_drop_item(self):
-        """Test dropping an item."""
+        """Test dropping an item.
+
+        Verifies that dropping an item removes it from the player's
+        inventory and leaves it in the current location.
+        """
         game = QuantumAdventure()
         game.states[0].add_item("rock")
         
@@ -165,7 +224,11 @@ class TestQuantumAdventureInventory:
         assert "rock" not in game.states[0].inventory
     
     def test_drop_nonexistent_item(self):
-        """Test dropping item not in inventory."""
+        """Test dropping item not in inventory.
+
+        Verifies that attempting to drop an item not in the inventory
+        returns an appropriate error message.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.DROP, ["nothing"], "drop nothing")
         
@@ -178,7 +241,11 @@ class TestQuantumAdventureUseItems:
     """Tests for using items (triggers collapse)."""
     
     def test_use_item_triggers_collapse(self):
-        """Test that using an item triggers wavefunction collapse."""
+        """Test that using an item triggers wavefunction collapse.
+
+        Verifies that using an item when multiple quantum states exist
+        causes the wavefunction to collapse to a single state.
+        """
         game = QuantumAdventure()
         # Create multiple states
         game.states.append(game.states[0].branch())
@@ -193,7 +260,11 @@ class TestQuantumAdventureUseItems:
         assert "collapse" in result.lower()
     
     def test_use_item_not_in_inventory(self):
-        """Test using item that doesn't exist."""
+        """Test using item that doesn't exist.
+
+        Verifies that attempting to use an item not in the inventory
+        returns an appropriate error message.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.USE, ["phantom"], "use phantom")
         
@@ -206,7 +277,11 @@ class TestQuantumAdventureObserve:
     """Tests for observation/collapse mechanics."""
     
     def test_observe_single_state(self):
-        """Test observing when only one state exists."""
+        """Test observing when only one state exists.
+
+        Verifies that observing with a single quantum state returns
+        a message indicating the wavefunction is already collapsed.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.OBSERVE, [], "observe")
         
@@ -215,7 +290,11 @@ class TestQuantumAdventureObserve:
         assert "already" in result.lower() or "single" in result.lower()
     
     def test_observe_collapses_multiple_states(self):
-        """Test that observe collapses multiple states."""
+        """Test that observe collapses multiple states.
+
+        Verifies that the observe command collapses multiple quantum
+        states into a single state based on probability weights.
+        """
         game = QuantumAdventure()
         # Create multiple states
         game.states.append(game.states[0].branch())
@@ -230,7 +309,11 @@ class TestQuantumAdventureObserve:
         assert "collapse" in result.lower() or "observation" in result.lower()
     
     def test_observe_records_stat(self):
-        """Test that observation records in player stats."""
+        """Test that observation records in player stats.
+
+        Verifies that each observation increments the player's
+        observations counter in their stats.
+        """
         game = QuantumAdventure()
         game.states.append(game.states[0].branch())
         
@@ -246,7 +329,11 @@ class TestQuantumAdventureStatus:
     """Tests for status display."""
     
     def test_status_single_state(self):
-        """Test status with single state."""
+        """Test status with single state.
+
+        Verifies that the status command displays timeline information
+        and current location when in a single quantum state.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.STATUS, [], "status")
         
@@ -256,7 +343,11 @@ class TestQuantumAdventureStatus:
         assert "Quantum Nexus" in result
     
     def test_status_multiple_states(self):
-        """Test status with multiple states."""
+        """Test status with multiple states.
+
+        Verifies that the status command displays information about
+        multiple parallel quantum states when they exist.
+        """
         game = QuantumAdventure()
         game.states.append(game.states[0].branch())
         game.states[1].move_to("Test Location")
@@ -271,7 +362,11 @@ class TestQuantumAdventureHistory:
     """Tests for history/log display."""
     
     def test_history_shows_events(self):
-        """Test that history shows logged events."""
+        """Test that history shows logged events.
+
+        Verifies that the history command displays events from
+        the story log including custom logged entries.
+        """
         game = QuantumAdventure()
         game.states[0].add_to_log("Test event 1")
         game.states[0].add_to_log("Test event 2")
@@ -286,7 +381,11 @@ class TestQuantumAdventureAttack:
     """Tests for combat mechanics."""
     
     def test_attack_no_enemy(self):
-        """Test attacking when no enemy present."""
+        """Test attacking when no enemy present.
+
+        Verifies that attacking without an enemy present returns
+        a message indicating there is nothing to attack.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.ATTACK, ["goblin"], "attack goblin")
         
@@ -295,7 +394,11 @@ class TestQuantumAdventureAttack:
         assert "nothing" in result.lower()
     
     def test_attack_with_enemy(self):
-        """Test attacking when enemy is present."""
+        """Test attacking when enemy is present.
+
+        Verifies that attacking an enemy results in either
+        defeating the enemy or missing the attack.
+        """
         game = QuantumAdventure()
         game.current_enemies[game.states[0].timeline_id] = "Test Monster"
         
@@ -310,7 +413,11 @@ class TestQuantumAdventureHelp:
     """Tests for help command."""
     
     def test_help_displays_commands(self):
-        """Test that help displays command list."""
+        """Test that help displays command list.
+
+        Verifies that the help command displays categorized lists
+        of available commands including movement and quantum commands.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.HELP, [], "help")
         
@@ -324,7 +431,11 @@ class TestQuantumAdventureQuit:
     """Tests for quit command."""
     
     def test_quit_stops_game(self):
-        """Test that quit stops the game."""
+        """Test that quit stops the game.
+
+        Verifies that the quit command sets the running flag to False
+        and returns a farewell message.
+        """
         game = QuantumAdventure()
         assert game.is_running() is True
         
@@ -339,7 +450,11 @@ class TestQuantumAdventureSaveLoad:
     """Tests for save/load functionality."""
     
     def test_save_command(self):
-        """Test save command execution."""
+        """Test save command execution.
+
+        Verifies that the save command successfully saves the game
+        and returns a confirmation message.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.SAVE, ["test_save"], "save test_save")
         
@@ -348,7 +463,11 @@ class TestQuantumAdventureSaveLoad:
             assert "saved" in result.lower()
     
     def test_load_command_success(self):
-        """Test load command with existing save."""
+        """Test load command with existing save.
+
+        Verifies that loading an existing save file successfully
+        restores the game state and returns a confirmation message.
+        """
         game = QuantumAdventure()
         mock_data = {
             "states": [game.states[0]],
@@ -362,7 +481,11 @@ class TestQuantumAdventureSaveLoad:
             assert "loaded" in result.lower()
     
     def test_load_command_failure(self):
-        """Test load command with non-existent save."""
+        """Test load command with non-existent save.
+
+        Verifies that loading a non-existent save file returns
+        an appropriate failure message.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.LOAD, ["nonexistent"], "load nonexistent")
         
@@ -375,7 +498,11 @@ class TestQuantumAdventureWelcome:
     """Tests for welcome message."""
     
     def test_welcome_message(self):
-        """Test welcome message content."""
+        """Test welcome message content.
+
+        Verifies that the welcome message contains the game title
+        and introduces the quantum superposition concept.
+        """
         game = QuantumAdventure()
         welcome = game.get_welcome_message()
         
@@ -388,7 +515,11 @@ class TestQuantumAdventureSerialization:
     """Tests for game serialization."""
     
     def test_to_dict(self):
-        """Test converting game to dictionary."""
+        """Test converting game to dictionary.
+
+        Verifies that the game state can be serialized to a dictionary
+        containing states and player data for saving.
+        """
         game = QuantumAdventure()
         game.states[0].add_item("test item")
         
@@ -399,7 +530,11 @@ class TestQuantumAdventureSerialization:
         assert len(data["states"]) == 1
     
     def test_from_dict(self):
-        """Test creating game from dictionary."""
+        """Test creating game from dictionary.
+
+        Verifies that a game can be restored from a serialized dictionary
+        with matching states and player data.
+        """
         game = QuantumAdventure()
         data = game.to_dict()
         
@@ -413,7 +548,11 @@ class TestQuantumAdventureUnknownCommand:
     """Tests for unknown commands."""
     
     def test_unknown_command(self):
-        """Test handling of unknown commands."""
+        """Test handling of unknown commands.
+
+        Verifies that unrecognized commands return an error message
+        suggesting the help command for valid options.
+        """
         game = QuantumAdventure()
         command = ParsedCommand(CommandType.UNKNOWN, [], "xyzzy")
         
@@ -426,7 +565,11 @@ class TestWavefunctionCollapse:
     """Tests for wavefunction collapse mechanics."""
     
     def test_collapse_weighted_by_probability(self):
-        """Test that collapse respects probability weights."""
+        """Test that collapse respects probability weights.
+
+        Verifies that wavefunction collapse favors higher probability
+        states when collapsing multiple quantum states.
+        """
         game = QuantumAdventure()
         
         # Create states with different probabilities
@@ -455,7 +598,11 @@ class TestWavefunctionCollapse:
         assert high_prob_count > 50  # Should be around 90
     
     def test_collapse_cleans_up_enemies(self):
-        """Test that collapse cleans up enemy tracking."""
+        """Test that collapse cleans up enemy tracking.
+
+        Verifies that collapsing the wavefunction removes enemy entries
+        for discarded quantum states, leaving at most one enemy entry.
+        """
         game = QuantumAdventure()
         state2 = game.states[0].branch()
         game.states.append(state2)

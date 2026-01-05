@@ -46,15 +46,27 @@ class ParsedCommand:
     raw_input: str
     
     def has_arguments(self) -> bool:
-        """Check if command has any arguments."""
+        """Check if command has any arguments.
+
+        Returns:
+            bool: True if the command has one or more arguments, False otherwise.
+        """
         return len(self.arguments) > 0
     
     def get_first_arg(self) -> Optional[str]:
-        """Get the first argument if present."""
+        """Get the first argument if present.
+
+        Returns:
+            Optional[str]: The first argument string, or None if no arguments exist.
+        """
         return self.arguments[0] if self.arguments else None
     
     def get_all_args_as_string(self) -> str:
-        """Join all arguments into a single string."""
+        """Join all arguments into a single string.
+
+        Returns:
+            str: All arguments joined by spaces, or empty string if no arguments.
+        """
         return " ".join(self.arguments)
 
 
@@ -221,7 +233,11 @@ class CommandParser:
     
     @classmethod
     def get_help_text(cls) -> str:
-        """Return formatted help text showing all available commands."""
+        """Return formatted help text showing all available commands.
+
+        Returns:
+            str: A formatted help string with all available commands and their usage.
+        """
         help_text = """
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                     QUANTUM TEXT ADVENTURE - HELP                     ║
@@ -287,27 +303,46 @@ class Player:
         }
     
     def record_observation(self) -> None:
-        """Record that the player observed/collapsed the wavefunction."""
+        """Record that the player observed/collapsed the wavefunction.
+
+        Increments the observations counter in player stats.
+        """
         self.stats["observations"] += 1
     
     def record_branch(self) -> None:
-        """Record that a new timeline branch was created."""
+        """Record that a new timeline branch was created.
+
+        Increments the timelines_created counter in player stats.
+        """
         self.stats["timelines_created"] += 1
     
     def record_item_collected(self) -> None:
-        """Record that an item was collected."""
+        """Record that an item was collected.
+
+        Increments the items_collected counter in player stats.
+        """
         self.stats["items_collected"] += 1
     
     def record_enemy_defeated(self) -> None:
-        """Record that an enemy was defeated."""
+        """Record that an enemy was defeated.
+
+        Increments the enemies_defeated counter in player stats.
+        """
         self.stats["enemies_defeated"] += 1
     
     def record_move(self) -> None:
-        """Record that a move was made."""
+        """Record that a move was made.
+
+        Increments the moves counter in player stats.
+        """
         self.stats["moves"] += 1
     
     def get_stats_display(self) -> str:
-        """Return a formatted string of player statistics."""
+        """Return a formatted string of player statistics.
+
+        Returns:
+            str: A formatted box-style display of all player stats.
+        """
         return (
             f"╔═══════════════════════════════════╗\n"
             f"║ Player: {self.name:25} ║\n"
@@ -321,7 +356,11 @@ class Player:
         )
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert player to dictionary for serialization."""
+        """Convert player to dictionary for serialization.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing player name and stats.
+        """
         return {
             "name": self.name,
             "stats": self.stats
@@ -329,7 +368,14 @@ class Player:
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Player":
-        """Create a Player from a dictionary."""
+        """Create a Player from a dictionary.
+
+        Args:
+            data: Dictionary containing player data with 'name' and 'stats' keys.
+
+        Returns:
+            Player: A new Player instance with the restored state.
+        """
         player = cls(name=data["name"])
         player.stats = data["stats"]
         return player

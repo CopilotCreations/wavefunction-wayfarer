@@ -33,11 +33,24 @@ class Location:
     visited: bool = False
     
     def get_available_directions(self) -> List[str]:
-        """Return list of available movement directions."""
+        """Return list of available movement directions.
+
+        Returns:
+            List of direction strings (e.g., ['north', 'south']) that the
+            player can move from this location.
+        """
         return list(self.connections.keys())
     
     def get_destination(self, direction: str) -> Optional[str]:
-        """Get the destination location for a given direction."""
+        """Get the destination location for a given direction.
+
+        Args:
+            direction: The direction to travel (e.g., 'north', 'south').
+
+        Returns:
+            The name of the destination location, or None if no connection
+            exists in that direction.
+        """
         return self.connections.get(direction.lower())
 
 
@@ -128,18 +141,28 @@ class QuantumState:
         return new_state
     
     def add_to_log(self, event: str) -> None:
-        """Add an event to the story log."""
+        """Add an event to the story log.
+
+        Args:
+            event: A description of the event that occurred.
+        """
         self.story_log.append(f"[Timeline {self.timeline_id}] {event}")
     
     def add_item(self, item: str) -> None:
-        """Add an item to the player's inventory."""
+        """Add an item to the player's inventory.
+
+        Args:
+            item: The name of the item to add.
+        """
         self.inventory.add(item)
         self.add_to_log(f"Acquired: {item}")
     
     def remove_item(self, item: str) -> bool:
-        """
-        Remove an item from inventory.
-        
+        """Remove an item from inventory.
+
+        Args:
+            item: The name of the item to remove.
+
         Returns:
             True if item was removed, False if not in inventory.
         """
@@ -150,16 +173,32 @@ class QuantumState:
         return False
     
     def has_item(self, item: str) -> bool:
-        """Check if player has an item in inventory."""
+        """Check if player has an item in inventory.
+
+        Args:
+            item: The name of the item to check for.
+
+        Returns:
+            True if the item is in the player's inventory, False otherwise.
+        """
         return item in self.inventory
     
     def move_to(self, new_location: str) -> None:
-        """Move to a new location."""
+        """Move to a new location.
+
+        Args:
+            new_location: The name of the destination location.
+        """
         self.add_to_log(f"Traveled from {self.location} to {new_location}")
         self.location = new_location
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert state to dictionary for serialization."""
+        """Convert state to dictionary for serialization.
+
+        Returns:
+            A dictionary representation of this QuantumState that can be
+            serialized to JSON.
+        """
         return {
             "location": self.location,
             "inventory": list(self.inventory),
@@ -172,7 +211,14 @@ class QuantumState:
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "QuantumState":
-        """Create a QuantumState from a dictionary."""
+        """Create a QuantumState from a dictionary.
+
+        Args:
+            data: A dictionary containing the serialized state data.
+
+        Returns:
+            A new QuantumState instance reconstructed from the dictionary.
+        """
         return cls(
             location=data["location"],
             inventory=set(data["inventory"]),
@@ -184,7 +230,12 @@ class QuantumState:
         )
     
     def __str__(self) -> str:
-        """Return a string representation of this state."""
+        """Return a string representation of this state.
+
+        Returns:
+            A human-readable string showing timeline ID, probability,
+            location, inventory, and event count.
+        """
         return (
             f"Timeline #{self.timeline_id} (p={self.probability:.2f})\n"
             f"  Location: {self.location}\n"
@@ -193,6 +244,12 @@ class QuantumState:
         )
     
     def __repr__(self) -> str:
+        """Return a debug representation of this state.
+
+        Returns:
+            A concise string suitable for debugging, showing timeline ID
+            and current location.
+        """
         return f"QuantumState(timeline={self.timeline_id}, location={self.location})"
 
 
@@ -375,25 +432,43 @@ class WorldBuilder:
     
     @classmethod
     def get_location(cls, name: str) -> Optional[Location]:
-        """Get a location by name."""
+        """Get a location by name.
+
+        Args:
+            name: The name of the location to retrieve.
+
+        Returns:
+            The Location object if found, or None if no location exists
+            with that name.
+        """
         if not cls.LOCATIONS:
             cls.initialize_world()
         return cls.LOCATIONS.get(name)
     
     @classmethod
     def get_all_location_names(cls) -> List[str]:
-        """Get a list of all location names."""
+        """Get a list of all location names.
+
+        Returns:
+            A list of strings containing all location names in the game world.
+        """
         if not cls.LOCATIONS:
             cls.initialize_world()
         return list(cls.LOCATIONS.keys())
     
     @classmethod
     def get_random_item_for_location(cls, location_name: str) -> Optional[str]:
-        """
-        Get a random item that might appear at a location.
-        
+        """Get a random item that might appear at a location.
+
         Items have a 30% chance of appearing when first visiting a location.
         This creates probabilistic world states.
+
+        Args:
+            location_name: The name of the location to check for items.
+
+        Returns:
+            A randomly selected item name from the location's item pool,
+            or None if no item appears (70% chance) or location not found.
         """
         location = cls.get_location(location_name)
         if location and location.items and random.random() < 0.3:
@@ -402,11 +477,17 @@ class WorldBuilder:
     
     @classmethod
     def get_random_enemy_for_location(cls, location_name: str) -> Optional[str]:
-        """
-        Get a random enemy that might appear at a location.
-        
+        """Get a random enemy that might appear at a location.
+
         Enemies have a 25% chance of appearing, creating probabilistic
         encounters across different timeline branches.
+
+        Args:
+            location_name: The name of the location to check for enemies.
+
+        Returns:
+            A randomly selected enemy name from the location's enemy pool,
+            or None if no enemy appears (75% chance) or location not found.
         """
         location = cls.get_location(location_name)
         if location and location.enemies and random.random() < 0.25:

@@ -14,7 +14,11 @@ class TestLocation:
     """Tests for the Location dataclass."""
     
     def test_location_creation(self):
-        """Test basic location creation."""
+        """Test basic location creation.
+
+        Verifies that a Location object is created with correct name,
+        description, connections, items, enemies, and default visited status.
+        """
         loc = Location(
             name="Test Room",
             description="A test location.",
@@ -31,7 +35,11 @@ class TestLocation:
         assert loc.visited is False
     
     def test_get_available_directions(self):
-        """Test getting available directions."""
+        """Test getting available directions.
+
+        Verifies that get_available_directions returns all connection
+        directions defined for the location.
+        """
         loc = Location(
             name="Hub",
             description="Central hub.",
@@ -45,7 +53,12 @@ class TestLocation:
         assert "east" in directions
     
     def test_get_destination(self):
-        """Test getting destination for a direction."""
+        """Test getting destination for a direction.
+
+        Verifies that get_destination returns the correct location name
+        for valid directions, handles case insensitivity, and returns
+        None for invalid directions.
+        """
         loc = Location(
             name="Hub",
             description="Central hub.",
@@ -57,7 +70,11 @@ class TestLocation:
         assert loc.get_destination("west") is None
     
     def test_location_with_no_connections(self):
-        """Test location with no connections."""
+        """Test location with no connections.
+
+        Verifies that a location without connections returns an empty
+        list for available directions and None for any destination query.
+        """
         loc = Location(name="Isolated", description="Nowhere to go.")
         
         assert loc.get_available_directions() == []
@@ -68,7 +85,12 @@ class TestQuantumState:
     """Tests for the QuantumState class."""
     
     def test_state_creation_defaults(self):
-        """Test state creation with defaults."""
+        """Test state creation with defaults.
+
+        Verifies that a QuantumState created without arguments has
+        the expected default values for location, inventory, story_log,
+        probability, and timeline_id.
+        """
         state = QuantumState()
         
         assert state.location == "Quantum Nexus"
@@ -79,7 +101,12 @@ class TestQuantumState:
         assert state.timeline_id is not None
     
     def test_state_creation_custom(self):
-        """Test state creation with custom values."""
+        """Test state creation with custom values.
+
+        Verifies that a QuantumState created with custom parameters
+        correctly stores the provided location, inventory, story_log,
+        and probability values.
+        """
         state = QuantumState(
             location="Forest",
             inventory={"sword", "shield"},
@@ -94,7 +121,12 @@ class TestQuantumState:
         assert state.probability == 0.5
     
     def test_branch_creates_deep_copy(self):
-        """Test that branching creates a proper deep copy."""
+        """Test that branching creates a proper deep copy.
+
+        Verifies that branch() creates a new state with a different
+        timeline_id, copies content correctly, and modifications to the
+        branched state do not affect the original state.
+        """
         original = QuantumState(
             location="Forest",
             inventory={"sword"},
@@ -118,7 +150,11 @@ class TestQuantumState:
         assert "Event 2" not in original.story_log
     
     def test_add_to_log(self):
-        """Test adding events to story log."""
+        """Test adding events to story log.
+
+        Verifies that add_to_log appends an event to the story_log
+        with the event text and timeline identifier included.
+        """
         state = QuantumState()
         state.add_to_log("Found a key")
         
@@ -127,7 +163,11 @@ class TestQuantumState:
         assert f"Timeline {state.timeline_id}" in state.story_log[0]
     
     def test_add_item(self):
-        """Test adding items to inventory."""
+        """Test adding items to inventory.
+
+        Verifies that add_item adds the item to the inventory set
+        and logs the acquisition in the story_log.
+        """
         state = QuantumState()
         state.add_item("magic wand")
         
@@ -135,7 +175,11 @@ class TestQuantumState:
         assert any("magic wand" in log for log in state.story_log)
     
     def test_remove_item_success(self):
-        """Test removing an existing item."""
+        """Test removing an existing item.
+
+        Verifies that remove_item returns True and removes the item
+        from inventory when the item exists.
+        """
         state = QuantumState(inventory={"key"})
         
         result = state.remove_item("key")
@@ -144,7 +188,11 @@ class TestQuantumState:
         assert "key" not in state.inventory
     
     def test_remove_item_failure(self):
-        """Test removing a non-existent item."""
+        """Test removing a non-existent item.
+
+        Verifies that remove_item returns False when attempting to
+        remove an item that is not in the inventory.
+        """
         state = QuantumState()
         
         result = state.remove_item("nonexistent")
@@ -152,14 +200,22 @@ class TestQuantumState:
         assert result is False
     
     def test_has_item(self):
-        """Test checking for item in inventory."""
+        """Test checking for item in inventory.
+
+        Verifies that has_item returns True for items present in
+        inventory and False for items not present.
+        """
         state = QuantumState(inventory={"compass"})
         
         assert state.has_item("compass") is True
         assert state.has_item("map") is False
     
     def test_move_to(self):
-        """Test moving to a new location."""
+        """Test moving to a new location.
+
+        Verifies that move_to updates the location and logs the
+        movement with both source and destination in the story_log.
+        """
         state = QuantumState(location="Start")
         state.move_to("Destination")
         
@@ -167,7 +223,12 @@ class TestQuantumState:
         assert any("Start" in log and "Destination" in log for log in state.story_log)
     
     def test_serialization(self):
-        """Test converting state to dict and back."""
+        """Test converting state to dict and back.
+
+        Verifies that to_dict correctly serializes the state including
+        location, inventory, story_log, defeated_enemies, and probability,
+        and that from_dict correctly restores the state from the dict.
+        """
         original = QuantumState(
             location="Cave",
             inventory={"torch", "rope"},
@@ -193,7 +254,11 @@ class TestQuantumState:
         assert restored.probability == original.probability
     
     def test_str_representation(self):
-        """Test string representation of state."""
+        """Test string representation of state.
+
+        Verifies that str() returns a human-readable representation
+        containing the timeline, location, and inventory information.
+        """
         state = QuantumState(
             location="Forest",
             inventory={"sword"}
@@ -206,7 +271,11 @@ class TestQuantumState:
         assert "sword" in str_repr
     
     def test_repr_representation(self):
-        """Test repr of state."""
+        """Test repr of state.
+
+        Verifies that repr() returns a representation containing
+        the class name and location.
+        """
         state = QuantumState(location="Cave")
         
         repr_str = repr(state)
@@ -219,14 +288,22 @@ class TestWorldBuilder:
     """Tests for the WorldBuilder class."""
     
     def test_initialize_world(self):
-        """Test world initialization creates locations."""
+        """Test world initialization creates locations.
+
+        Verifies that initialize_world returns a dictionary with at
+        least 5 locations and includes the starting location 'Quantum Nexus'.
+        """
         locations = WorldBuilder.initialize_world()
         
         assert len(locations) >= 5  # At least 5 locations required
         assert "Quantum Nexus" in locations  # Starting location must exist
     
     def test_get_location(self):
-        """Test getting a specific location."""
+        """Test getting a specific location.
+
+        Verifies that get_location returns the correct Location object
+        with the expected name and non-empty connections.
+        """
         WorldBuilder.initialize_world()
         
         nexus = WorldBuilder.get_location("Quantum Nexus")
@@ -236,7 +313,11 @@ class TestWorldBuilder:
         assert len(nexus.connections) > 0
     
     def test_get_nonexistent_location(self):
-        """Test getting a location that doesn't exist."""
+        """Test getting a location that doesn't exist.
+
+        Verifies that get_location returns None when queried for
+        a location name that does not exist in the world.
+        """
         WorldBuilder.initialize_world()
         
         result = WorldBuilder.get_location("Nonexistent Place")
@@ -244,7 +325,11 @@ class TestWorldBuilder:
         assert result is None
     
     def test_get_all_location_names(self):
-        """Test getting all location names."""
+        """Test getting all location names.
+
+        Verifies that get_all_location_names returns a list with at
+        least 5 location names including 'Quantum Nexus'.
+        """
         WorldBuilder.initialize_world()
         
         names = WorldBuilder.get_all_location_names()
@@ -254,7 +339,11 @@ class TestWorldBuilder:
         assert "Quantum Nexus" in names
     
     def test_locations_are_connected(self):
-        """Test that locations form a connected graph from start."""
+        """Test that locations form a connected graph from start.
+
+        Verifies that Quantum Nexus has at least 2 connections and
+        that all connections point to valid locations in the world.
+        """
         locations = WorldBuilder.initialize_world()
         
         # Verify Quantum Nexus has connections
@@ -266,7 +355,12 @@ class TestWorldBuilder:
             assert destination in locations
     
     def test_random_item_for_location(self):
-        """Test random item generation for locations."""
+        """Test random item generation for locations.
+
+        Verifies that get_random_item_for_location can be called
+        multiple times without error. Due to probabilistic behavior,
+        only verifies the method executes successfully.
+        """
         WorldBuilder.initialize_world()
         
         # Run multiple times to test probabilistic behavior
@@ -282,7 +376,12 @@ class TestWorldBuilder:
         assert len(items_found) >= 0  # At least test it runs without error
     
     def test_random_enemy_for_location(self):
-        """Test random enemy generation for locations."""
+        """Test random enemy generation for locations.
+
+        Verifies that get_random_enemy_for_location can be called
+        multiple times without error. Due to probabilistic behavior,
+        only verifies the method executes successfully.
+        """
         WorldBuilder.initialize_world()
         
         # Run for a location with enemies
@@ -295,7 +394,11 @@ class TestWorldBuilder:
         assert len(enemies_found) >= 0  # At least test it runs without error
     
     def test_location_has_items(self):
-        """Test that locations have items defined."""
+        """Test that locations have items defined.
+
+        Verifies that at least 3 locations in the world have
+        non-empty item lists defined.
+        """
         locations = WorldBuilder.initialize_world()
         
         # At least some locations should have items
@@ -307,7 +410,11 @@ class TestWorldBuilder:
         assert len(locations_with_items) >= 3
     
     def test_location_has_enemies(self):
-        """Test that locations have enemies defined."""
+        """Test that locations have enemies defined.
+
+        Verifies that at least 3 locations in the world have
+        non-empty enemy lists defined.
+        """
         locations = WorldBuilder.initialize_world()
         
         # At least some locations should have enemies
